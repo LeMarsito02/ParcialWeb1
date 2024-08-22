@@ -1,0 +1,97 @@
+/* menu*/
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F5F5F5;
+}
+
+.sidebar {
+    width: 80px;
+    height: 100vh;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo img {
+    width: 110px;
+    height: 70px;
+    margin-bottom: 30px;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.menu-item {
+    width: 100%;
+    text-align: center;
+}
+
+.menu-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #555;
+    padding: 10px 0;
+    transition: background-color 0.3s ease;
+}
+
+.menu-item a img {
+    width: 24px;
+    height: 24px;
+}
+
+.menu-item a span {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.menu-item.active a {
+    background-color: #FFEBD0;
+    color: #FF8C00;
+    border-radius: 10px;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.profile span {
+    font-size: 12px;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+
+    .menu-item a span, .profile span {
+        display: none;
+    }
+
+    .menu-item a img {
+        margin: 0;
+    }
+}
