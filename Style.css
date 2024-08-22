@@ -5,13 +5,6 @@
     box-sizing: border-box;
   }
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #F5F5F5;
-}
-
 .sidebar {
     width: 80px;
     height: 100vh;
@@ -104,4 +97,184 @@ h2{
     .menu-item a img {
         margin: 0;
     }
+}
+
+
+
+/* MENURESTAURANTE*/
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f6f6f6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px  5px;
+}
+
+.menuProductos {
+    width: 60rem;
+    background: white;
+    padding: 20px;
+    margin:40px ;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.search-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    width: 70%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.categories {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.category {
+    background-color: #f4f4f4;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.category.active {
+    background-color: #ff8c00;
+    color: white;
+}
+
+.menu-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.item {
+    width: 30%;
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.item img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.item h3, .item p {
+    margin: 5px 0;
+}
+
+.add-btn {
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-btn:hover {
+    background-color: #ff6a00;
+}
+
+.order-summary {
+    width: 40%;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.order-summary h2 {
+    margin-top: 0;
+}
+
+.summary {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+
+.print-btn {
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    padding: 15px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1.2em;
+}
+
+.print-btn:hover {
+    background-color: #ff6a00;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.order-item button {
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.order-item button:hover {
+    background-color: #ff6a00;
+}
+
+.order-item span {
+    margin: 0 10px;
+}
+
+.delivery-options {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.delivery-btn {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delivery-btn.active {
+    background-color: #ff8c00;
+    color: white;
+}
+
+.delivery-btn:hover:not(.active) {
+    background-color: #e0e0e0;
 }

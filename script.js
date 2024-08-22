@@ -1,0 +1,156 @@
+// script.js
+const menuItems = [
+    { name: 'Pizza de Pepperoni', price: 40000, available: 18, category: 'pizza', image: 'Assets/MenuProductos/pizzapeperoni.png' },
+    { name: 'Pizza de Queso', price: 40000, available: 9, category: 'pizza', image: 'Assets/MenuProductos/pizzaqueso.png' },
+    { name: 'Pizza Vegetariana', price: 35000, available: 7, category: 'pizza', image: 'Assets/MenuProductos/pizzavegetariana.png' },
+    { name: 'Pizza Hawaiana', price: 45000, available: 14, category: 'pizza', image: 'Assets/MenuProductos/pizzahawaiana.png' },
+    { name: 'Pizza de Pollo BBQ', price: 50000, available: 10, category: 'pizza', image: 'Assets/MenuProductos/pizzabbq.png' },
+    { name: 'Pizza de Margherita', price: 70000, available: 8, category: 'pizza', image: 'Assets/MenuProductos/pizzamarguerita.png' },
+    { name: 'Coca-Cola', price: 5000, available: 50, category: 'drinks', image: 'Assets/MenuProductos/cocacola.png' },
+    { name: 'Pepsi', price: 10000, available: 45, category: 'drinks', image: 'Assets/MenuProductos/pepsi.png' },
+    { name: 'Heladito', price: 8000, available: 10, category: 'dessert', image: 'Assets/MenuProductos/helado.png' },
+    { name: 'Torta de chocolate', price: 15000, available: 5, category: 'dessert', image: 'Assets/MenuProductos/CakeChocolate.png' },
+];
+
+let order = [];
+let deliveryOption = 'pickup'; // Default to pickup
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderMenuItems('pizza'); // Default category to show on load
+});
+
+function renderMenuItems(category) {
+    const menuItemsContainer = document.getElementById('menu-items');
+    menuItemsContainer.innerHTML = ''; // Clear previous items
+
+    const filteredItems = menuItems.filter(item => item.category === category);
+    
+    filteredItems.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'item';
+        itemElement.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <h3>${item.name}</h3>
+            <p>$${item.price.toFixed(2)}</p>
+            <p>${item.available} Existencias</p>
+            <button class="add-btn" onclick="addToOrder('${item.name}', ${item.price})">Add</button>
+        `;
+        menuItemsContainer.appendChild(itemElement);
+    });
+}
+
+function filterCategory(category) {
+    renderMenuItems(category);
+
+    // Update active category styling
+    const categoryButtons = document.querySelectorAll('.category');
+    categoryButtons.forEach(button => {
+        button.classList.remove('active');
+        if (button.getAttribute('data-category') === category) {
+            button.classList.add('active');
+        }
+    });
+}
+
+function addToOrder(name, price) {
+    const existingItem = order.find(item => item.name === name);
+
+    if (existingItem) {
+        existingItem.quantity++;
+        existingItem.totalPrice += price;
+    } else {
+        order.push({ name, price, quantity: 1, totalPrice: price });
+    }
+
+    updateOrderSummary();
+}
+
+function removeFromOrder(name) {
+    const itemIndex = order.findIndex(item => item.name === name);
+
+    if (itemIndex > -1) {
+        if (order[itemIndex].quantity > 1) {
+            order[itemIndex].quantity--;
+            order[itemIndex].totalPrice -= order[itemIndex].price;
+        } else {
+            order.splice(itemIndex, 1);
+        }
+    }
+
+    updateOrderSummary();
+}
+
+function updateOrderSummary() {
+    const orderItems = document.getElementById('order-items');
+    orderItems.innerHTML = '';
+
+    let itemCount = 0;
+    let total = 0;
+
+    order.forEach((item, index) => {
+        itemCount += item.quantity;
+        total += item.totalPrice;
+
+        const orderItem = document.createElement('div');
+        orderItem.className = 'order-item';
+        orderItem.innerHTML = `
+            <p>${item.name} <span>$${item.totalPrice.toFixed(2)}</span></p>
+            <button class="remove-btn" onclick="removeFromOrder('${item.name}')">-</button>
+            <span>${item.quantity}</span>
+            <button class="add-btn" onclick="addToOrder('${item.name}', ${item.price})">+</button>
+        `;
+        orderItems.appendChild(orderItem);
+    });
+
+    document.getElementById('item-count').textContent = itemCount;
+    document.getElementById('item-total').textContent = `$${total.toFixed(2)}`;
+    const tax = total * 0.10;
+    document.getElementById('tax-amount').textContent = `$${tax.toFixed(2)}`;
+    document.getElementById('total-amount').textContent = `$${(total + tax).toFixed(2)}`;
+}
+
+function setDeliveryOption(option) {
+    deliveryOption = option;
+
+    // Update active option styling
+    const deliveryButtons = document.querySelectorAll('.delivery-btn');
+    deliveryButtons.forEach(button => {
+        button.classList.remove('active');
+    });
+
+    if (option === 'pickup') {
+        document.querySelector('.delivery-btn:nth-child(1)').classList.add('active');
+    } else if (option === 'delivery') {
+        document.querySelector('.delivery-btn:nth-child(2)').classList.add('active');
+    }
+}
+
+function printBill() {
+    if (order.length === 0) {
+        alert("No hay productos en el pedido para imprimir.");
+        return;
+    }
+
+    // Construir la URL con los parámetros de los productos seleccionados
+    let params = new URLSearchParams();
+
+    order.forEach((item, index) => {
+        params.append(`product${index}_name`, item.name);
+        params.append(`product${index}_price`, item.price.toFixed(2));
+        params.append(`product${index}_quantity`, item.quantity);
+        params.append(`product${index}_totalPrice`, item.totalPrice.toFixed(2));
+    });
+
+    // Añadir información adicional como el total y la opción de entrega
+    const total = order.reduce((sum, item) => sum + item.totalPrice, 0);
+    const tax = total * 0.10;
+    const totalAmount = (total + tax).toFixed(2);
+
+    params.append('total', total.toFixed(2));
+    params.append('tax', tax.toFixed(2));
+    params.append('totalAmount', totalAmount);
+    params.append('deliveryOption', deliveryOption);
+
+    // Redirigir al usuario a la página principal con los parámetros en la URL
+    window.location.href = `index.html?${params.toString()}`;
+}
