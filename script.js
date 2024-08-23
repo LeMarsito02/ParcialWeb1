@@ -1,4 +1,3 @@
-// script.js
 const menuItems = [
     { name: 'Pizza de Pepperoni', price: 40000, available: 18, category: 'pizza', image: 'Assets/MenuProductos/pizzapeperoni.png' },
     { name: 'Pizza de Queso', price: 40000, available: 9, category: 'pizza', image: 'Assets/MenuProductos/pizzaqueso.png' },
@@ -13,15 +12,15 @@ const menuItems = [
 ];
 
 let order = [];
-let deliveryOption = 'pickup'; // Default to pickup
+let deliveryOption = 'pickup'; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderMenuItems('pizza'); // Default category to show on load
+    renderMenuItems('pizza'); 
 });
 
 function renderMenuItems(category) {
     const menuItemsContainer = document.getElementById('menu-items');
-    menuItemsContainer.innerHTML = ''; // Clear previous items
+    menuItemsContainer.innerHTML = ''; 
 
     const filteredItems = menuItems.filter(item => item.category === category);
     
@@ -112,7 +111,6 @@ function updateOrderSummary() {
 function setDeliveryOption(option) {
     deliveryOption = option;
 
-    // Update active option styling
     const deliveryButtons = document.querySelectorAll('.delivery-btn');
     deliveryButtons.forEach(button => {
         button.classList.remove('active');
