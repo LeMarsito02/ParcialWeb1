@@ -131,7 +131,6 @@ function printBill() {
         return;
     }
 
-    // Construir la URL con los parámetros de los productos seleccionados
     let params = new URLSearchParams();
 
     order.forEach((item, index) => {
@@ -141,7 +140,6 @@ function printBill() {
         params.append(`product${index}_totalPrice`, item.totalPrice.toFixed(2));
     });
 
-    // Añadir información adicional como el total y la opción de entrega
     const total = order.reduce((sum, item) => sum + item.totalPrice, 0);
     const tax = total * 0.10;
     const totalAmount = (total + tax).toFixed(2);
@@ -151,6 +149,5 @@ function printBill() {
     params.append('totalAmount', totalAmount);
     params.append('deliveryOption', deliveryOption);
 
-    // Redirigir al usuario a la página principal con los parámetros en la URL
     window.location.href = `index.html?${params.toString()}`;
 }
