@@ -1,4 +1,3 @@
-// script.js
 const menuItems = [
     { name: 'Pizza de Pepperoni', price: 40000, available: 18, category: 'pizza', image: 'Assets/MenuProductos/pizzapeperoni.png' },
     { name: 'Pizza de Queso', price: 40000, available: 9, category: 'pizza', image: 'Assets/MenuProductos/pizzaqueso.png' },
@@ -13,15 +12,15 @@ const menuItems = [
 ];
 
 let order = [];
-let deliveryOption = 'pickup'; // Default to pickup
+let deliveryOption = 'pickup'; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderMenuItems('pizza'); // Default category to show on load
+    renderMenuItems('pizza'); 
 });
 
 function renderMenuItems(category) {
     const menuItemsContainer = document.getElementById('menu-items');
-    menuItemsContainer.innerHTML = ''; // Clear previous items
+    menuItemsContainer.innerHTML = ''; 
 
     const filteredItems = menuItems.filter(item => item.category === category);
     
@@ -112,7 +111,6 @@ function updateOrderSummary() {
 function setDeliveryOption(option) {
     deliveryOption = option;
 
-    // Update active option styling
     const deliveryButtons = document.querySelectorAll('.delivery-btn');
     deliveryButtons.forEach(button => {
         button.classList.remove('active');
@@ -131,7 +129,6 @@ function printBill() {
         return;
     }
 
-    // Construir la URL con los parámetros de los productos seleccionados
     let params = new URLSearchParams();
 
     order.forEach((item, index) => {
@@ -141,7 +138,6 @@ function printBill() {
         params.append(`product${index}_totalPrice`, item.totalPrice.toFixed(2));
     });
 
-    // Añadir información adicional como el total y la opción de entrega
     const total = order.reduce((sum, item) => sum + item.totalPrice, 0);
     const tax = total * 0.10;
     const totalAmount = (total + tax).toFixed(2);
@@ -151,6 +147,5 @@ function printBill() {
     params.append('totalAmount', totalAmount);
     params.append('deliveryOption', deliveryOption);
 
-    // Redirigir al usuario a la página principal con los parámetros en la URL
     window.location.href = `index.html?${params.toString()}`;
 }
