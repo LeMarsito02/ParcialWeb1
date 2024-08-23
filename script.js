@@ -1,14 +1,14 @@
 const menuItems = [
-    { name: 'Pizza de Pepperoni', price: 40000, available: 18, category: 'pizza', image: 'Assets/MenuProductos/pizzapeperoni.png' },
-    { name: 'Pizza de Queso', price: 40000, available: 9, category: 'pizza', image: 'Assets/MenuProductos/pizzaqueso.png' },
-    { name: 'Pizza Vegetariana', price: 35000, available: 7, category: 'pizza', image: 'Assets/MenuProductos/pizzavegetariana.png' },
-    { name: 'Pizza Hawaiana', price: 45000, available: 14, category: 'pizza', image: 'Assets/MenuProductos/pizzahawaiana.png' },
-    { name: 'Pizza de Pollo BBQ', price: 50000, available: 10, category: 'pizza', image: 'Assets/MenuProductos/pizzabbq.png' },
-    { name: 'Pizza de Margherita', price: 70000, available: 8, category: 'pizza', image: 'Assets/MenuProductos/pizzamarguerita.png' },
-    { name: 'Coca-Cola', price: 5000, available: 50, category: 'drinks', image: 'Assets/MenuProductos/cocacola.png' },
-    { name: 'Pepsi', price: 10000, available: 45, category: 'drinks', image: 'Assets/MenuProductos/pepsi.png' },
-    { name: 'Heladito', price: 8000, available: 10, category: 'dessert', image: 'Assets/MenuProductos/helado.png' },
-    { name: 'Torta de chocolate', price: 15000, available: 5, category: 'dessert', image: 'Assets/MenuProductos/CakeChocolate.png' },
+    { name: 'Pizza de Pepperoni', price: 40000, availableDescription: 'La clasica de toda la vida', category: 'pizza', image: 'Assets/MenuProductos/pizzapeperoni.png' },
+    { name: 'Pizza de Queso', price: 40000, availableDescription: 'Muy rica y sabrosa', category: 'pizza', image: 'Assets/MenuProductos/pizzaqueso.png' },
+    { name: 'Pizza Vegetariana', price: 35000, availableDescription: 'Only vegetarianos', category: 'pizza', image: 'Assets/MenuProductos/pizzavegetariana.png' },
+    { name: 'Pizza Hawaiana', price: 45000, availableDescription: 'La mejor pizza de hawai', category: 'pizza', image: 'Assets/MenuProductos/pizzahawaiana.png' },
+    { name: 'Pizza de Pollo BBQ', price: 50000, availableDescription: 'Con pollo bbq', category: 'pizza', image: 'Assets/MenuProductos/pizzabbq.png' },
+    { name: 'Pizza de Margherita', price: 70000, availableDescription: 'Una piza italiana', category: 'pizza', image: 'Assets/MenuProductos/pizzamarguerita.png' },
+    { name: 'Coca-Cola', price: 5000, availableDescription: 'Una coke', category: 'drinks', image: 'Assets/MenuProductos/cocacola.png' },
+    { name: 'Pepsi', price: 10000, availableDescription: 'Peor que la CocaCola', category: 'drinks', image: 'Assets/MenuProductos/pepsi.png' },
+    { name: 'Heladito', price: 8000, availableDescription: 'El mejor helado de Colombia', category: 'dessert', image: 'Assets/MenuProductos/helado.png' },
+    { name: 'Torta de chocolate', price: 15000, availableDescription: 'Una torta my rica', category: 'dessert', image: 'Assets/MenuProductos/CakeChocolate.png' },
 ];
 
 let order = [];
@@ -31,7 +31,7 @@ function renderMenuItems(category) {
             <img src="${item.image}" alt="${item.name}">
             <h3>${item.name}</h3>
             <p>$${item.price.toFixed(2)}</p>
-            <p>${item.available} Existencias</p>
+            <p>${item.availableDescription} </p>
             <button class="add-btn" onclick="addToOrder('${item.name}', ${item.price})">Add</button>
         `;
         menuItemsContainer.appendChild(itemElement);
@@ -40,8 +40,6 @@ function renderMenuItems(category) {
 
 function filterCategory(category) {
     renderMenuItems(category);
-
-    // Update active category styling
     const categoryButtons = document.querySelectorAll('.category');
     categoryButtons.forEach(button => {
         button.classList.remove('active');
@@ -53,7 +51,6 @@ function filterCategory(category) {
 
 function addToOrder(name, price) {
     const existingItem = order.find(item => item.name === name);
-
     if (existingItem) {
         existingItem.quantity++;
         existingItem.totalPrice += price;
