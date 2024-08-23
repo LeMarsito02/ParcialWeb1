@@ -1,2 +1,5 @@
-# ParcialWeb1
+# Parcial
+Santiago Peña
+Grabiela Sofia Fuentes
+Samuel Sabogal
  
