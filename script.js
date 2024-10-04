@@ -1,45 +1,77 @@
-const menuItems = [
-    { name: 'Pizza de Pepperoni', price: 40000, availableDescription: 'La clasica de toda la vida', category: 'pizza', image: 'Assets/MenuProductos/pizzapeperoni.png' },
-    { name: 'Pizza de Queso', price: 40000, availableDescription: 'Muy rica y sabrosa', category: 'pizza', image: 'Assets/MenuProductos/pizzaqueso.png' },
-    { name: 'Pizza Vegetariana', price: 35000, availableDescription: 'Only vegetarianos', category: 'pizza', image: 'Assets/MenuProductos/pizzavegetariana.png' },
-    { name: 'Pizza Hawaiana', price: 45000, availableDescription: 'La mejor pizza de hawai', category: 'pizza', image: 'Assets/MenuProductos/pizzahawaiana.png' },
-    { name: 'Pizza de Pollo BBQ', price: 50000, availableDescription: 'Con pollo bbq', category: 'pizza', image: 'Assets/MenuProductos/pizzabbq.png' },
-    { name: 'Pizza de Margherita', price: 70000, availableDescription: 'Una piza italiana', category: 'pizza', image: 'Assets/MenuProductos/pizzamarguerita.png' },
-    { name: 'Coca-Cola', price: 5000, availableDescription: 'Una coke', category: 'drinks', image: 'Assets/MenuProductos/cocacola.png' },
-    { name: 'Pepsi', price: 10000, availableDescription: 'Peor que la CocaCola', category: 'drinks', image: 'Assets/MenuProductos/pepsi.png' },
-    { name: 'Heladito', price: 8000, availableDescription: 'El mejor helado de Colombia', category: 'dessert', image: 'Assets/MenuProductos/helado.png' },
-    { name: 'Torta de chocolate', price: 15000, availableDescription: 'Una torta my rica', category: 'dessert', image: 'Assets/MenuProductos/CakeChocolate.png' },
-];
-
 let order = [];
 let deliveryOption = 'pickup'; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderMenuItems('pizza'); 
+    loadMenuItems('pizza'); 
 });
 
-function renderMenuItems(category) {
+async function fetchMenuItems() {
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbyj0KOB7_W-hH3MwDFCb70HLS_fkMlG8EybCIkO2r6o3_Oe1iNOYDhEBIWORKCTSx2k/exec');   
+        
+        if (!response.ok) {
+            throw new Error('Error al obtener los productos desde la API');
+        }
+
+        const data = await response.json();
+
+        // Ahora, accedemos a los elementos de productos a través de data
+        if (!data || !data.data || !Array.isArray(data.data)) {
+            throw new Error('Datos inválidos recibidos de la API');
+        }
+
+        return data.data;  // Cambiado para retornar el array de productos
+    } catch (error) {
+        console.error('Error al cargar los productos:', error);
+        document.getElementById('menu-items').innerHTML = `<p>Error al cargar los productos: ${error.message}</p>`;
+        return []; // Devolver una lista vacía para evitar errores
+    }
+}
+
+async function loadMenuItems(category) {
+    const loadingElement = document.getElementById('loading');
+    loadingElement.style.display = 'block'; // Mostrar el spinner
+
+    try {
+        const menuItems = await fetchMenuItems(); 
+        renderMenuItems(menuItems, category);
+    } catch (error) {
+        console.error('Error al cargar los productos:', error);
+    } finally {
+        loadingElement.style.display = 'none'; // Ocultar el spinner al finalizar
+    }
+}
+
+function renderMenuItems(menuItems, category) {
     const menuItemsContainer = document.getElementById('menu-items');
     menuItemsContainer.innerHTML = ''; 
 
+    // Filtra los elementos basados en la categoría seleccionada
     const filteredItems = menuItems.filter(item => item.category === category);
     
-    filteredItems.forEach(item => {
+    // Si no hay elementos, muestra un mensaje
+    if (filteredItems.length === 0) {
+        menuItemsContainer.innerHTML = `<p>No hay productos disponibles en esta categoría</p>`;
+        return;
+    }
+
+    // Renderiza los productos filtrados
+    filteredItems.forEach(item => {   
         const itemElement = document.createElement('div');
         itemElement.className = 'item';
         itemElement.innerHTML = `
             <img src="${item.image}" alt="${item.name}">
             <h3>${item.name}</h3>
             <p>$${item.price.toFixed(2)}</p>
-            <p>${item.availableDescription} </p>
-            <button class="add-btn" onclick="addToOrder('${item.name}', ${item.price})">Add</button>
+            <p>${item.availableDescription}</p>
+            <button class="add-btn" onclick="addToOrder('${item.name}', ${item.price})">Agregar</button>
         `;
         menuItemsContainer.appendChild(itemElement);
     });
 }
 
 function filterCategory(category) {
-    renderMenuItems(category);
+    loadMenuItems(category); // Cargar productos filtrados de la API
     const categoryButtons = document.querySelectorAll('.category');
     categoryButtons.forEach(button => {
         button.classList.remove('active');
@@ -119,30 +151,50 @@ function setDeliveryOption(option) {
         document.querySelector('.delivery-btn:nth-child(2)').classList.add('active');
     }
 }
-
+    
 function printBill() {
+    const customerName = document.getElementById('customer-name').value;
+    const customerPhone = document.getElementById('customer-phone').value;
+    const customerAddress = document.getElementById('customer-address').value;
+
+    if (!customerName || !customerPhone || !customerAddress) {
+        alert("Por favor, completa la información del cliente.");
+        return;
+    }
+
     if (order.length === 0) {
         alert("No hay productos en el pedido para imprimir.");
         return;
     }
 
-    let params = new URLSearchParams();
+    // Formatear los datos como texto plano
+    let itemsList = order.map(item => `${item.name}: ${item.totalPrice}`).join(', ');
+    let total = order.reduce((sum, item) => sum + item.totalPrice, 0).toFixed(2);
+    let tax = (total * 0.10).toFixed(2);
+    let totalAmount = (total * 1.10).toFixed(2);
 
-    order.forEach((item, index) => {
-        params.append(`product${index}_name`, item.name);
-        params.append(`product${index}_price`, item.price.toFixed(2));
-        params.append(`product${index}_quantity`, item.quantity);
-        params.append(`product${index}_totalPrice`, item.totalPrice.toFixed(2));
+    let params = `Nombre: ${customerName}, Teléfono: ${customerPhone}, Dirección: ${customerAddress}, Productos: [${itemsList}], Total: $${total}, Impuesto: $${tax}, Total con Impuesto: $${totalAmount}`;
+
+    fetch('https://script.google.com/macros/s/AKfycbx_Ete5IlNtsYxKizPm0LfhcShbeJ42LkOZzkTQIJ9TPx0uVGckXWLVKPpk4mgYjPVG/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8' // Cambiado a 'text/plain'
+        },
+        body: params // Enviar como texto plano
+    })
+    .then(response => response.text()) // Cambiar a .text() para manejar texto plano
+    .then(data => {
+        console.log('Success:', data);
+        alert("Pedido enviado con éxito");
+    })
+    .catch((error) => {
+        console.error('Error al enviar el pedido:', error);
+        alert("Hubo un error al enviar el pedido. Inténtalo de nuevo.");
     });
-
-    const total = order.reduce((sum, item) => sum + item.totalPrice, 0);
-    const tax = total * 0.10;
-    const totalAmount = (total + tax).toFixed(2);
-
-    params.append('total', total.toFixed(2));
-    params.append('tax', tax.toFixed(2));
-    params.append('totalAmount', totalAmount);
-    params.append('deliveryOption', deliveryOption);
-
-    window.location.href = `index.html?${params.toString()}`;
 }
+
+
+
+
+
