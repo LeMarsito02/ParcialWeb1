@@ -151,48 +151,85 @@ function setDeliveryOption(option) {
         document.querySelector('.delivery-btn:nth-child(2)').classList.add('active');
     }
 }
-    
-function printBill() {
-    const customerName = document.getElementById('customer-name').value;
-    const customerPhone = document.getElementById('customer-phone').value;
-    const customerAddress = document.getElementById('customer-address').value;
 
+async function printBill() {
+    const customerName = document.getElementById('customer-name').value.trim();
+    const customerPhone = document.getElementById('customer-phone').value.trim();
+    const customerAddress = document.getElementById('customer-address').value.trim();
+
+    // Validar datos del cliente
     if (!customerName || !customerPhone || !customerAddress) {
         alert("Por favor, completa la información del cliente.");
         return;
     }
 
+    // Validar que haya productos en el pedido
     if (order.length === 0) {
         alert("No hay productos en el pedido para imprimir.");
         return;
     }
 
-    // Formatear los datos como texto plano
-    let itemsList = order.map(item => `${item.name}: ${item.totalPrice}`).join(', ');
-    let total = order.reduce((sum, item) => sum + item.totalPrice, 0).toFixed(2);
-    let tax = (total * 0.10).toFixed(2);
-    let totalAmount = (total * 1.10).toFixed(2);
+    // Formatear los productos para el pedido
+    let itemsList = order.map(item => ({
+        nombre: item.name,
+        precio: item.totalPrice,
+        cantidad: item.quantity // Añadido para incluir la cantidad
+    }));
 
-    let params = `Nombre: ${customerName}, Teléfono: ${customerPhone}, Dirección: ${customerAddress}, Productos: [${itemsList}], Total: $${total}, Impuesto: $${tax}, Total con Impuesto: $${totalAmount}`;
+    // Calcular total, impuestos y total con impuestos
+    let total = order.reduce((sum, item) => sum + item.totalPrice, 0); // Suma total de los productos
+    let tax = (total * 0.10).toFixed(2); // Impuesto del 10%
+    let totalAmount = (total + parseFloat(tax)).toFixed(2); // Total con impuestos
 
-    fetch('https://script.google.com/macros/s/AKfycbx_Ete5IlNtsYxKizPm0LfhcShbeJ42LkOZzkTQIJ9TPx0uVGckXWLVKPpk4mgYjPVG/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8' // Cambiado a 'text/plain'
+    // Crear objeto con los datos del cliente y el pedido en el formato adecuado
+    const orderDetails = {
+        cliente: {
+            nombre: customerName,
+            telefono: customerPhone,
+            direccion: customerAddress
         },
-        body: params // Enviar como texto plano
-    })
-    .then(response => response.text()) // Cambiar a .text() para manejar texto plano
-    .then(data => {
-        console.log('Success:', data);
-        alert("Pedido enviado con éxito");
-    })
-    .catch((error) => {
+        pedido: itemsList
+    };
+
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzbNaHYDDLovduYUmX5DQHwehRXcndusiBiIMocB9hzju1rGansdugLNgTPoeKhWnZe/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify(orderDetails)
+        });
+
+        // En modo 'no-cors', la respuesta será opaca, no se puede leer el contenido.
+        if (!response || response.type === 'opaque') {
+            console.warn('Advertencia: Respuesta opaca debido a las políticas de CORB. Ignorando el error.');
+            alert('¡Pedido realizado con éxito!');
+            window.location.href = 'index.html';
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`Error en la solicitud: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.result === 'success') {
+            alert('¡Pedido realizado con éxito!');
+            window.location.href = 'index.html';
+        } else {
+            throw new Error('Error al procesar el pedido.');
+        }
+    } catch (error) {
         console.error('Error al enviar el pedido:', error);
-        alert("Hubo un error al enviar el pedido. Inténtalo de nuevo.");
-    });
+        alert('Hubo un problema al procesar tu pedido. Por favor, inténtalo de nuevo.');
+    }
 }
+
+
+
 
 
 
